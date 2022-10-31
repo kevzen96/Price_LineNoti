@@ -1,4 +1,6 @@
 import requests
+from datetime import datetime as d
+import time
 
 
 def main(message):
@@ -12,21 +14,26 @@ def main(message):
 
 url = 'https://api.bitkub.com'
 price = 0
+mycoin = ['THB_BTC', 'THB_ETH', 'THB_DOGE']
+date = d.now()
+day = date.strftime("%Y-%m-%d %H:%M")
 
 while True:
     req = requests.get(url + '/api/market/ticker')
     data = req.json()
-    last = data['THB_BTC']['last']
-    high = data['THB_BTC']['high24hr']
-    low = data['THB_BTC']['low24hr']
-
-    if price != last:
-        msg = f"ตอนนี้ Bitcoin \n" \
-              f"ราคาล่าสุดอยู่ที่ : {last} \n" \
-              f"----------- \n" \
-              f"24 H สูงสุด : {high} \n" \
-              f"24 H ต่ำสุด : {low} \n" \
-              f"----------- \n"
-        main({'message': msg})
-        price = last
-
+    for i in mycoin:
+        coin = data[i]
+        last = coin['last']
+        high = coin['high24hr']
+        low = coin['low24hr']
+        if price != last:
+            msg = f"{day} \n" \
+                  f"ตอนนี้ {i} \n" \
+                  f"ราคาล่าสุดอยู่ที่ : {last} \n" \
+                  f"----------- \n" \
+                  f"24 H สูงสุด : {high} \n" \
+                  f"24 H ต่ำสุด : {low} \n" \
+                  f"----------- \n"
+            price = last
+            main({'message': msg})
+    time.sleep(60)
